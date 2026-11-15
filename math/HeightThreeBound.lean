@@ -1,11 +1,17 @@
-import Mathlib
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Data.Finset.Powerset
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.Choose
+import Mathlib.Tactic.Ring
 
 /-!
 # Induced-universal posets of height at most three
 
 The declarations below give the target asymptotic statement, the counting lower
-bound, the exact label count for one template, and the decoder, and the exceptional-slot extension. The proof of the asymptotic upper bound and the remaining
-formalization steps are recorded at the end of the file.
+bound, the exact label count for one template, the decoder, and the
+exceptional-slot extension. The ordinary proof of the asymptotic upper bound
+and the remaining formalization steps are recorded at the end of the file.
 -/
 
 namespace HeightThree
@@ -50,7 +56,7 @@ def bipartite {a b : ℕ} (bits : (Fin a × Fin b) → Bool) :
     | _, _ => False
   rank_lt := by
     intro x y h
-    cases x <;> cases y <;> first | contradiction | decide
+    cases x <;> cases y <;> first | contradiction | (change (0 : Fin 3) < 1; decide)
   trans := by
     intro x y z hxy hyz
     cases x <;> cases y <;> cases z <;> contradiction
@@ -135,13 +141,28 @@ theorem decoder_triangle
     ¬ ac.allPositive a_c c_a ∨
       (leftPositive am a_m ∧ rightPositive mc c_m) := by
   classical
-  have amCovers := am.covers
-  have mcCovers := mc.covers
-  have acCovers := ac.covers
-  unfold Readers.single at noTriangle
-  unfold Readers.allPositive at *
-  unfold leftPositive rightPositive at *
-  tauto
+  by_cases outer : ac.allPositive a_c c_a
+  · right
+    have noMiddleLeft (h : ac.right) : ¬ am.right := fun reader =>
+      vetoMC ⟨⟨reader, adjAM.2 reader⟩, ⟨h, outer.2 h⟩⟩
+    have noMiddleRight (h : ac.left) : ¬ mc.left := fun reader =>
+      vetoAM ⟨⟨h, outer.1 h⟩, ⟨reader, adjMC.1 reader⟩⟩
+    have leftReads : am.left := by
+      by_contra missing
+      have middleReads := am.covers.resolve_left missing
+      have outerRight : ¬ ac.right := fun h => noMiddleLeft h middleReads
+      have outerLeft := ac.covers.resolve_right outerRight
+      exact noTriangle ⟨fun h => missing h.1,
+        fun h => noMiddleRight outerLeft h.1, fun h => outerRight h.2⟩
+    have rightReads : mc.right := by
+      by_contra missing
+      have middleReads := mc.covers.resolve_right missing
+      have outerLeft : ¬ ac.left := fun h => noMiddleRight h middleReads
+      have outerRight := ac.covers.resolve_left outerLeft
+      exact noTriangle ⟨fun h => noMiddleLeft outerRight h.2,
+        fun h => missing h.2, fun h => outerLeft h.1⟩
+    exact ⟨⟨leftReads, adjAM.1 leftReads⟩, ⟨rightReads, adjMC.2 rightReads⟩⟩
+  · exact Or.inl outer
 
 /-- A label's rank, slot, and its positive readings on designated pairs. -/
 structure Label (Slot : Type) where
@@ -193,7 +214,7 @@ theorem decoder_transitive {Slot : Type} (rank : Slot → Fin 3)
   have hm₀ := hmc.2
   have h12 : (1 : Fin 3) ≠ 2 := by decide
   have h10 : (1 : Fin 3) ≠ 0 := by decide
-  simp only [ha, hm, h12, eq_self, and_false, if_false, true_and, if_true] at ha₀
+  simp only [ha, hm, h12, eq_self, and_false, if_false, if_true] at ha₀
   simp only [hm, hc, h10, false_and, if_false] at hm₀
   refine ⟨h₁.trans h₂, ?_⟩
   simp only [ha, hc, eq_self, and_self, if_true]
@@ -261,7 +282,7 @@ theorem decode_encode {Slot : Type} (P : RankedOrder Slot)
         simp only [hx, hy, eq_self, and_self, if_true]
         rw [show graphBit P x y ↔ ¬ P.rel x y by simp [graphBit, hx, hy]]
         constructor
-        · exact fun h => h.elim (fun h' => Classical.byContradiction h') noExtra
+        · exact fun h => h.elim (fun h' => Classical.byContradiction h') (by simpa only [hx, hy] using noExtra)
         · exact fun h => Or.inl (fun hn => hn h)
       · have hy' : P.rank y = 1 := by
           apply Fin.ext
@@ -279,7 +300,7 @@ theorem decode_encode {Slot : Type} (P : RankedOrder Slot)
               by simpa [hx, hc, lt02] using hxc.2⟩
         simp only [hx, hy, eq_self, true_and, if_false, if_true]
         rw [show graphBit P x y ↔ P.rel x y by simp [graphBit, hx, hy]]
-        exact ⟨And.left, fun h => ⟨h, noVeto h⟩⟩
+        exact ⟨And.left, fun h => ⟨h, by simpa only [hx] using noVeto h⟩⟩
     · have hx' : P.rank x = 1 := by
         apply Fin.ext
         omega
@@ -346,7 +367,7 @@ theorem template_label_count (n k d : ℕ) :
     Fintype.card (TemplateLabels n k d) =
       n * 2 ^ k * ∑ i ∈ Finset.range (d + 1), n.choose i := by
   classical
-  simp [TemplateLabels, Deviations, Fintype.card_fun, Fintype.card_sigma,
+  simp [TemplateLabels, Deviations, Fintype.card_sigma,
     Fin.sum_univ_eq_sum_range, Nat.mul_assoc]
 
 /-! ## Take the union over a finite family of templates -/
@@ -358,7 +379,6 @@ def disjointUnion {ι τ : Type} (components : ι → RankedOrder τ) :
   rel x y := x.1 = y.1 ∧ (components x.1).rel x.2 y.2
   rank_lt := by
     intro x y h
-    change (components x.1).rank x.2 < (components y.1).rank y.2
     rw [← h.1]
     exact (components x.1).rank_lt h.2
   trans := by
@@ -448,8 +468,8 @@ theorem template_family_upper_bound {ι : Type} [Fintype ι]
 The formal declarations above do not invoke steps 1–6 as axioms.
 To derive AsymptoticUpperBound inside Lean, the reduction, bounded label encoding, exceptional-slot
 embedding and count, and the analytic estimates must still be
-connected to the existing Mathlib theorems. The Lean source was
-reviewed without running a Lean compiler.
+connected to the existing Mathlib theorems. The supporting declarations
+were checked with Lean and Mathlib v4.30.0.
 -/
 
 end HeightThree

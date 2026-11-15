@@ -300,7 +300,7 @@ c++ -O3 -std=c++17 -Wall -Wextra -pedantic \
 
 ## Lean source
 
-The [Lean source](HeightThreeBound.lean) contains the counting lower bound, the decoder and extension lemmas, and the statement of the asymptotic upper bound. The asymptotic proof is written out in prose. The Lean snapshot awaits compiler verification.
+The [Lean source](HeightThreeBound.lean) contains the counting lower bound, the decoder and extension lemmas, and the statement of the asymptotic upper bound. The asymptotic proof is written out in prose. The supporting declarations compile with Lean and Mathlib v4.30.0. From a Mathlib checkout at that tag with its dependencies available, run `lake env lean /path/to/universal-poset-mantel/math/HeightThreeBound.lean`.
 
 ## References
 
