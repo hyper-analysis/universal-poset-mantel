@@ -21,9 +21,9 @@ labels chosen from different targets.
   exception pooling. The bipartite signed-graph case has an
   $O(2^{n/4})$ bound. A polynomial prefactor for the full height-three
   family remains open here.
-- [Partial Lean formalization](math/HeightThreeBound.lean) includes the
-  asymptotic statement and supporting declarations. The asymptotic proof is
-  in the prose sources. The supporting declarations compile with Lean and Mathlib v4.30.0.
+- [Lean formalization](math/HeightThreeBound.lean) proves the asymptotic
+  upper bound and the matching counting lower bounds for both target families.
+  The file compiles with Lean and Mathlib v4.30.0.
 - [Computational checks](experiments/height-three-universal-posets/README.md)
   cover the decoder and several of its refinements.
 
