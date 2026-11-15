@@ -1,0 +1,340 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath,amssymb}
+\usepackage[top=18mm,bottom=24mm,left=22mm,right=22mm,headheight=14pt,footskip=12mm]{geometry}
+\usepackage{microtype}
+\usepackage{array,booktabs,longtable}
+\usepackage[table]{xcolor}
+\usepackage{parskip,titlesec,fancyhdr}
+\usepackage{hyperref}
+\input{glyphtounicode}
+\pdfgentounicode=1
+\definecolor{ink}{HTML}{192A38}
+\definecolor{teal}{HTML}{145F58}
+\definecolor{ruleteal}{HTML}{B8CFCD}
+\definecolor{wash}{HTML}{EAF4F1}
+\hypersetup{colorlinks,urlcolor=teal,pdftitle={Induced-universal posets of height three},pdfsubject={The Mantel–Hall construction}}
+\setlength{\parskip}{5pt plus 1pt}
+\setlength{\parindent}{0pt}
+\linespread{1.07}
+\setcounter{secnumdepth}{0}
+\titleformat{\section}{\sffamily\Large\bfseries\color{teal}}{}{0pt}{}
+\titleformat{\subsection}{\sffamily\normalsize\bfseries\color{teal}}{}{0pt}{}
+\titlespacing*{\section}{0pt}{13pt plus 2pt}{5pt}
+\titlespacing*{\subsection}{0pt}{9pt}{2pt}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\makeatletter
+\renewcommand{\footrule}{\hbox to\headwidth{\color{ruleteal}\leaders\hrule height \footrulewidth\hfill}\vskip 4pt}
+\makeatother
+\fancyfoot[L]{\sffamily\footnotesize\color{teal}UNIVERSAL POSETS\enspace /\enspace HEIGHT THREE}
+\fancyfoot[R]{\sffamily\footnotesize\color{teal}\thepage}
+\newcommand{\tightlist}{\setlength{\itemsep}{2pt}\setlength{\parskip}{0pt}}
+\newcommand{\PaperTitle}{%
+  {\sffamily\footnotesize\bfseries\color{teal}MANTEL--HALL CONSTRUCTION\par}
+  \vspace{6pt}
+  {\sffamily\bfseries\fontsize{30}{32}\selectfont Induced-universal posets\\of height three\par}
+  \vspace{12pt}}
+\newenvironment{resultbox}{\par\begingroup\setlength{\fboxsep}{11pt}\noindent
+  \begin{lrbox}{0}\begin{minipage}{\dimexpr\linewidth-2\fboxsep\relax}\setlength{\parskip}{4pt}}
+  {\end{minipage}\end{lrbox}\colorbox{wash}{\usebox{0}}\par\endgroup\vspace{3pt}}
+\begin{document}
+\color{ink}
+\PaperTitle
+
+\begin{resultbox}
+
+\textbf{Theorem.} Let \(u_3(n)\) be the least size of a poset of height
+at most three that contains every \(n\)-element poset of height at most
+three as an induced subposet. Then \[
+u_3(n)=2^{n/4+o(n)}.
+\] The same exponent holds when the targets are restricted to connected
+posets whose maximal chains all have three elements.
+
+\end{resultbox}
+
+\section{1. Encode the order as a triangle-free
+graph}\label{encode-the-order-as-a-triangle-free-graph}
+
+Assign each element the length of the longest chain ending there. Denote
+the three ranks by \(A,M,C\) from bottom to top. Empty ranks are
+allowed. Every strict comparison goes up in rank. An induced embedding
+must preserve both comparisons and incomparabilities.
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+Rank pair & A graph edge means \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Bottom--middle, \(A,M\) & \(a<m\) \\
+Middle--top, \(M,C\) & \(m<c\) \\
+Bottom--top, \(A,C\) & \(a\) and \(c\) are incomparable \\
+\end{longtable}
+
+A triangle in the resulting graph \(G\) would give \(a<m<c\) with
+incomparable outer endpoints. Conversely, every triangle-free graph on
+these three ranks defines a poset by the same rules. The only two-step
+chains to check traverse all three ranks, and triangle-freeness forces
+the composite comparison. The rule also allows a bottom--top comparison
+with no middle element between its endpoints.
+
+\section{2. Assign bits to slots}\label{assign-bits-to-slots}
+
+A \textbf{slot} is a named position on a rank. Fix a triangle-free
+tripartite graph \(H\) on at most \(n\) slots. For each cross-rank pair
+in \(H\), designate one endpoint to read its graph bit. For every other
+cross-rank pair, designate both endpoints. We call \(H\) the template.
+
+Give each slot \(b=\lceil n/4\rceil\) copies. Match each edge of \(H\)
+to a copy of either endpoint. Any set of edges with endpoint set \(W\)
+has at most \(e(H[W])\) edges. Mantel's theorem yields \[
+e(H[W])\le |W|^2/4\le b|W|.
+\] The neighborhood in the matching problem has exactly \(b|W|\) copies,
+so Hall's theorem gives an assignment. Fix it for the template. Each
+slot reads at most \(b\) bits from pairs in \(H\).
+
+\newpage
+
+\section{3. Decode comparisons on arbitrary
+labels}\label{decode-comparisons-on-arbitrary-labels}
+
+A host vertex is a label at a slot. For a label \(x\), let \(S_x\) be
+the set of slots whose bits it reads as \(1\). In expressions involving
+\(S_x\), a label name can also stand for its slot. The host order goes
+strictly upward in rank.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Adjacent ranks.} Compare the lower label to the upper label if
+  all designated readings of the pair are \(1\) and the labels have no
+  common positive slot on the third rank.
+\item
+  \textbf{Bottom to top.} Declare \(a<c\) if any designated reading of
+  \(ac\) is \(0\) or if \(S_a\cap S_c\) contains a middle slot.
+\end{itemize}
+
+\subsection{Transitivity}\label{transitivity}
+
+Suppose three arbitrary labels satisfy \(a<m<c\). If any reading of
+\(ac\) is \(0\), the outer rule gives \(a<c\). Otherwise, choose an
+outer endpoint \(x\) that reads \(ac\) as \(1\) and call the other
+endpoint \(y\). Thus \(y\in S_x\).
+
+If \(m\) read \(my\), the comparison between \(m\) and \(y\) would force
+its reading to be \(1\). But then \(y\in S_x\cap S_m\) would veto the
+comparison between \(x\) and \(m\). Therefore \(m\) does not read
+\(my\). This forces \(my\in H\), with \(y\) as its sole reader, and
+\(m\in S_y\).
+
+\begin{itemize}
+\tightlist
+\item
+  If \(ac\in H\), the two edges \(ac,my\in H\) force \(mx\notin H\) by
+  triangle-freeness. The slot \(x\) reads \(mx\), and the adjacent
+  comparison forces that reading to be \(1\).
+\item
+  If \(ac\notin H\), both outer endpoints read \(ac\) as \(1\). Applying
+  the same veto argument with \(x\) and \(y\) exchanged forces \(x\) to
+  read \(mx\) as \(1\).
+\end{itemize}
+
+Thus \(m\in S_a\cap S_c\), and the outer rule gives \(a<c\). This proof
+applies to every combination of labels, even if two labels disagree on a
+pair read twice. Strict rank increase gives irreflexivity and height at
+most three.
+
+\subsection{Induced embeddings and label
+count}\label{induced-embeddings-and-label-count}
+
+To embed a target, select the label at each occupied slot that records
+its genuine bits. An adjacent edge passes the reading test and cannot be
+vetoed, since a common positive slot would give a triangle in \(G\). A
+missing adjacent edge fails the reading test. An outer comparison has
+bit \(0\). An outer incomparability has bit \(1\), and a common positive
+middle slot would again yield a triangle. The decoder therefore recovers
+the whole order, and distinct slots give an injection.
+
+Suppose each slot has at most \(d\) positive bits outside \(H\). Its
+label records the assigned bits on \(H\) explicitly and lists the
+positions of its positive bits elsewhere. Including every label allowed
+by these budgets gives at most \[
+n\,2^{\lceil n/4\rceil}\sum_{i=0}^{d}\binom ni
+\] vertices for one template.
+
+\newpage
+
+\section{4. Find a bounded family of
+templates}\label{find-a-bounded-family-of-templates}
+
+Fix \(0<\delta<1/64\) and \(0<\varepsilon<\delta/4\). The rank-refining
+equitable Szemerédi regularity lemma {[}1{]} gives, for sufficiently
+large \(n\), an exceptional set \(V_0\) of size at most
+\(\varepsilon n\) and \(t\le T(\varepsilon)\) clusters of equal size
+\(q\). Each cluster lies in one rank and at most \(\varepsilon t^2\)
+cluster pairs are irregular. The bound \(T(\varepsilon)\) is independent
+of \(n\).
+
+Join two clusters in the reduced graph when their pair is
+\(\varepsilon\)-regular and has density at least \(\delta\). The reduced
+graph is triangle-free. In a putative triangle of clusters \(X,Y,Z\),
+fewer than \(\varepsilon q\) vertices in \(X\) have fewer than
+\((\delta-\varepsilon)q\) neighbors in \(Y\), and the same bound holds
+for \(Z\). Choose \(x\) outside both bad sets. The two neighbor sets
+each have size at least \(\varepsilon q\). Regularity between \(Y,Z\)
+gives density at least \(\delta-\varepsilon>0\) between those sets, so
+an edge between them makes a triangle in \(G\).
+
+Complete every joined cluster pair to a biclique to form \(H\). There
+are no template edges incident to \(V_0\). A triangle in \(H\) would
+project to a triangle of clusters, so \(H\) is triangle-free.
+
+\subsection{Remove high-degree
+deviations}\label{remove-high-degree-deviations}
+
+The edges of \(G\) outside \(H\) are the positive bits missing from the
+template. The low-density regular pairs contribute at most
+\(\delta n^2\) such edges, irregular pairs at most
+\(\varepsilon t^2q^2\le\varepsilon n^2\), and pairs touching \(V_0\) at
+most \(\varepsilon n^2\). Their total is at most \(2\delta n^2\).
+
+By summing degrees, at most \(4\sqrt\delta\,n\) vertices have more than
+\(\sqrt\delta\,n\) uncovered neighbors. Set those vertices and \(V_0\)
+aside. There are at most \[
+k=\left\lfloor(4\sqrt\delta+\varepsilon)n\right\rfloor
+\] exceptional vertices, and every surviving slot has at most
+\(d=\lfloor\sqrt\delta\,n\rfloor\) positive bits outside \(H\).
+
+\subsection{Use a fixed number of slots per
+cluster}\label{use-a-fixed-number-of-slots-per-cluster}
+
+Give every cluster \(\lfloor n/t\rfloor\) slots. This is at least \(q\),
+so survivors fit and all remaining slots can be left vacant. Set every
+target graph bit touching a vacant slot to \(0\). These slots are
+isolated in the extended target graph, which remains triangle-free, and
+they add no positive bits outside \(H\). The template uses at most \(n\)
+slots in total.
+
+A template now depends only on \(t\), the rank of each cluster, and the
+reduced graph. Thus there are at most \[
+C_T=\sum_{t=1}^{T(\varepsilon)}3^t2^{\binom t2}
+\] templates. This is a constant for fixed \(\varepsilon\). Take their
+disjoint union as the core host \(B\). Its size is at most \(C_T\) times
+the label count from Section 3.
+
+\newpage
+
+\section{5. Restore the exceptional
+vertices}\label{restore-the-exceptional-vertices}
+
+Use a single pool \([k]\) of exception identifiers. Decorate each core
+vertex with every pair of disjoint sets \(D,U\subseteq[k]\). In an
+embedding they record the exceptional vertices below and above it. For
+each identifier \(i\), include a label at each of the three ranks for
+every pair with \(D\cap U=\{i\}\). An exceptional vertex counts itself
+in both sets. Unused identifiers are absent from the genuine signatures.
+
+For labels \(x,y\) on strictly increasing ranks, declare \(x<y\) if \[
+D_x\subseteq D_y,\qquad U_y\subseteq U_x,
+\] and either their core vertices compare in \(B\), or
+\(U_x\cap D_y\ne\varnothing\). The core clause applies only when both
+labels have core vertices.
+
+\textbf{Transitivity.} If \(x<y<z\), the inclusions compose. A witness
+in \(U_x\cap D_y\) survives because \(D_y\subseteq D_z\). A witness in
+\(U_y\cap D_z\) survives because \(U_y\subseteq U_x\). If neither step
+uses a witness, both steps come from \(B\), whose transitivity gives the
+composite. The rank condition still bounds the height by three.
+
+\textbf{Induced embedding.} Use the core embedding and the actual
+signatures and ranks. A true comparison yields the inclusions. If both
+endpoints are core vertices, their core comparison suffices. If one
+endpoint is exceptional, it witnesses the comparison itself. Conversely,
+a declared comparison either comes from the induced core embedding or
+has a genuine exception weakly between the endpoints. Either way it is a
+true comparison.
+
+For a core vertex there are \(3^k\) signatures. For each exception
+identifier there are three ranks and \(3^{k-1}\) signatures per rank
+when \(k\ge1\). Thus the extension has at most \(3^k(|B|+k)\) vertices,
+with the same formula at \(k=0\).
+
+\section{6. Finish the upper bound}\label{finish-the-upper-bound}
+
+For \(\rho=\sqrt\delta<1/2\), the binomial sum is at most
+\(2^{h_2(\rho)n}\), where
+\(h_2(\rho)=-\rho\log_2\rho-(1-\rho)\log_2(1-\rho)\). Indeed,
+multiplying by \(s^{\rho n}\) for \(s=\rho/(1-\rho)<1\) bounds the
+resulting sum by \((1+s)^n\). Combining all factors gives \[
+\log_2 u_3(n)\le
+\frac n4+
+\bigl[h_2(\sqrt\delta)+(4\sqrt\delta+\varepsilon)\log_2 3\bigr]n
++\log_2 n+O_{\delta,\varepsilon}(1).
+\] For any prescribed tolerance, choose \(\delta\) and \(\varepsilon\)
+so that the bracket is smaller than half that tolerance. Then take \(n\)
+large enough to absorb the logarithm and the constant. This proves
+\(u_3(n)\le 2^{n/4+o(n)}\).
+
+\newpage
+
+\section{7. Match the exponent by
+counting}\label{match-the-exponent-by-counting}
+
+Use one bottom element \(a\), and split the other \(n-1\) labeled
+elements as evenly as possible between \(M\) and \(C\). Put \(a\) below
+every other element. In the \(M\times C\) comparison matrix, fix one row
+and one column to all \(1\)s. Choose all other entries independently.
+
+The fixed row ensures that each top element has a middle predecessor.
+The fixed column gives every middle element a top successor. With the
+single bottom element, this makes every maximal chain have three
+elements and makes the order connected.
+
+The free entries give \[
+2^{(|M|-1)(|C|-1)}=2^{n^2/4-O(n)}
+\] different labeled orders. A host on \(N\) vertices admits at most
+\(N^n\) injections from the \(n\) labels, and each injection induces at
+most one order. Thus \[
+N^n\ge 2^{n^2/4-O(n)}
+\quad\Longrightarrow\quad
+N\ge 2^{n/4-O(1)}.
+\] Combining this with the upper bound proves the theorem for all
+height-three targets and for the connected pure subfamily. \(\square\)
+
+\subsection{Proof and accompanying
+material}\label{proof-and-accompanying-material}
+
+The construction gives the optimal leading exponent for the full family.
+The proof uses Szemerédi regularity, so its overhead is \(2^{o(n)}\).
+The repository note separately treats the bipartite signed-graph family,
+sharper exceptional-vertex pooling, and the 657-vertex benchmark for the
+rank profile \((4,8,4)\).
+
+The Lean source states the asymptotic theorem and includes the decoder,
+extension, and counting declarations. The integration of the regularity
+argument into the formal asymptotic proof remains open.
+
+\begin{itemize}
+\tightlist
+\item
+  \href{https://github.com/hyper-analysis/universal-poset-mantel/blob/main/math/height-three-universal-posets.md}{Repository
+  proof notes and refinements}
+\item
+  \href{https://github.com/hyper-analysis/universal-poset-mantel/blob/main/math/HeightThreeBound.lean}{Lean
+  source}
+\item
+  \href{https://github.com/hyper-analysis/universal-poset-mantel/tree/main/experiments/height-three-universal-posets/profile-benchmark}{Fixed-profile
+  benchmark and replay}
+\end{itemize}
+
+\subsection{References}\label{references}
+
+{[}1{]} József Balogh, Ramon I. Garcia, and Marcelo Sales,
+\href{https://arxiv.org/abs/2607.12980}{\emph{Even smaller universal
+posets}}, arXiv:2607.12980. Theorem 3.1 gives the refining regularity
+lemma used here.
+\end{document}

@@ -1,0 +1,10 @@
+PASS 657 vertices, 63912422 repeated-demand states
+
+657 profile-host vertices, 1000 independently replayed embeddings
+family     cases  best cut min/median/max    floor cut min/median/max
+sparse       250   120/  568/1024              576/  992/1024
+mixed        250   224/  568/986               256/  576/1024
+dense        250   256/  256/256               256/  256/256
+repeated     250    56/  560/1024              256/  992/1024
+Best-cut component across all cases: 56/496/1024; 887 smaller than the shared profile host.
+Entire sample: best single cut component = 1024, best union of at most two cut components = 1024.
